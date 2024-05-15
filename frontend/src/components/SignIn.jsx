@@ -13,6 +13,9 @@ function SignIn() {
                     console.log(res.data.message)
                     window.location.href = '/';
                 }
+                else{
+                  alert(res.data.message)
+                }
             })
             .catch((err)=>console.log(err))
         }

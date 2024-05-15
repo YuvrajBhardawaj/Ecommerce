@@ -115,3 +115,52 @@ export async function signIn(email, password,res) {
         return { success: false, message: 'Failed to sign in' };
     }
 }
+export async function addReview(cust_id, item_id, review) {
+    try {
+        if (!cust_id || !item_id || !review) {
+            throw new Error('Invalid input data');
+        }
+
+        const [existingReview] = await pool.query("SELECT * FROM reviews WHERE cust_id = ? AND item_id = ?", [cust_id, item_id]);
+
+        if (existingReview.length > 0) {
+            // If a review exists, update it
+            const [updateResult] = await pool.query("UPDATE reviews SET review = ? WHERE cust_id = ? AND item_id = ?", [review, cust_id, item_id]);
+            if (updateResult.affectedRows !== 1) {
+                throw new Error('Failed to update review');
+            }
+            return { success: true, message: 'Review updated successfully' };
+        } else {
+            // If no review exists, insert a new one
+            const [insertResult] = await pool.query("INSERT INTO reviews (cust_id, item_id, review) VALUES (?, ?, ?)", [cust_id, item_id, review]);
+            if (insertResult.affectedRows !== 1) {
+                throw new Error('Failed to add review');
+            }
+            return { success: true, message: 'Review added successfully' };
+        }
+    } catch (error) {
+        console.error('Error adding review:', error.message);
+        return { success: false, message: 'Failed to add review' };
+    }
+}
+export async function getReviews(item_id) {
+    try {
+        if (!item_id) {
+            throw new Error('Item ID is required');
+        }
+        // Execute the query to fetch reviews
+        const [reviews] = await pool.query("SELECT review FROM reviews WHERE item_id = ?", [item_id]);
+
+
+        // Check if reviews were found
+        if (reviews.length === 0) {
+            return { success: true, message: 'No reviews found for this item', reviews: [] };
+        }
+
+        // Return the reviews
+        return { success: true, reviews: reviews };
+    } catch (error) {
+        console.error('Error fetching reviews:', error);
+        return { success: false, message: 'Failed to fetch reviews' };
+    }
+}
