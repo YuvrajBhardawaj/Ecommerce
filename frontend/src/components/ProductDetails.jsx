@@ -1,13 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
+<<<<<<< HEAD
 import heart from '../assets/heart_.png'
+=======
+
+>>>>>>> 3a3454619793d3a1f743628594e16296ed201a0f
 function ProductDetails() {
     const { id } = useParams();
     const [product, setProduct] = useState(null);
     const [quantity, setQuantity] = useState(1);
     const [reviewText, setReviewText] = useState(""); // State for review text
     const [reviews, setReviews] = useState([]);
+<<<<<<< HEAD
     const [isInWishlist, setIsInWishlist] = useState(false);
 
     useEffect(() => {
@@ -32,6 +37,24 @@ function ProductDetails() {
 
         fetchProductAndReviews();
     }, [id]);
+=======
+    useEffect(() => {
+        fetch(`https://fakestoreapi.com/products/${id}`)
+            .then(res => res.json())
+            .then(data => {
+                setProduct(data);
+                axios.get(`/api/reviews/${id}`)
+                .then(response => {
+                    console.log(response.data)
+                    if(response.data.success)
+                        //console.log(response.data)
+                        setReviews(response.data.reviews);
+                })
+                .catch(error => console.error('Error fetching product reviews:', error));
+            })
+            .catch(error => console.error('Error fetching product details:', error));
+    }, [id,reviews]);
+>>>>>>> 3a3454619793d3a1f743628594e16296ed201a0f
 
     if (!product) {
         return <div>Loading...</div>;
@@ -43,7 +66,11 @@ function ProductDetails() {
     };
 
     const handleAddToCart = () => {
+<<<<<<< HEAD
         axios.post('/api/product/addCart', { item_id: id, title:product.title, quantity, price: product.price, image:product.image })
+=======
+        axios.post('/api/product/addCart', { item_id: id, quantity, price: product.price })
+>>>>>>> 3a3454619793d3a1f743628594e16296ed201a0f
             .then(res => {
                 if (res.data.success) {
                     alert('Product added to cart');
@@ -72,6 +99,7 @@ function ProductDetails() {
 
     const handleReviewSubmit = (event) => {
         event.preventDefault();
+<<<<<<< HEAD
         axios.post('/api/reviews', { item_id: id, review: reviewText })
             .then(response => {
                 if (response.data.success) {
@@ -80,12 +108,24 @@ function ProductDetails() {
                     setReviews(prevReviews => [...prevReviews, { review: reviewText }]); // Update reviews state
                 } else {
                     alert(response.data.message);
+=======
+        axios.post('/api/reviews', { item_id: id, review: reviewText }) 
+            .then(response => {
+                console.log(response)
+                if(response.data.success){
+                    alert('Review submitted successfully');
+                    setReviewText(""); 
+                }
+                else{
+                    alert(response.data.message)
+>>>>>>> 3a3454619793d3a1f743628594e16296ed201a0f
                 }
             })
             .catch(error => {
                 console.error('Error submitting review:', error);
             });
     };
+<<<<<<< HEAD
     const handleAddToWishlist = () => {
         const apiEndpoint = isInWishlist ? '/api/product/removeWishlist' : '/api/product/addWishlist';
         axios.post(apiEndpoint, { item_id: id, title: product.title, price: product.price, image: product.image })
@@ -101,6 +141,9 @@ function ProductDetails() {
                 console.error('Error updating wishlist:', error);
             });
     };
+=======
+
+>>>>>>> 3a3454619793d3a1f743628594e16296ed201a0f
     return (
         <div className="container">
             <div className="row">
@@ -123,10 +166,16 @@ function ProductDetails() {
                             onChange={handleChangeQuantity}
                         />
                     </div>
+<<<<<<< HEAD
                     <div className="btn-group" role="group" aria-label="Product Actions" style={{height:'40px'}}>
                         <button type="button" className="btn btn-primary" onClick={handleAddToCart}>Add to Cart</button>
                         <button type="button" className="btn btn-success" onClick={handleBuyNow}>Buy Now</button>
                         {isInWishlist?<button type="button" className="btn bg-transparent" onClick={handleAddToWishlist}>❤️</button>:<button type="button" className="btn bg-transparent" onClick={handleAddToWishlist}><img src={heart} alt="" style={{height:'100%'}}/></button>}
+=======
+                    <div className="btn-group" role="group" aria-label="Add to Cart">
+                        <button type="button" className="btn btn-primary" onClick={handleAddToCart}>Add to Cart</button>
+                        <button type="button" className="btn btn-success" onClick={handleBuyNow}>Buy Now</button>
+>>>>>>> 3a3454619793d3a1f743628594e16296ed201a0f
                     </div>
                     <div className="review-form mt-4">
                         <h4>Submit a Review</h4>
@@ -150,7 +199,11 @@ function ProductDetails() {
                         {reviews.length > 0 ? (
                             reviews.map((review, index) => (
                                 <div key={index} className="review">
+<<<<<<< HEAD
                                     <p>{index + 1}. {review.comment}</p>
+=======
+                                    <p>{index+1}. {review.review}</p>
+>>>>>>> 3a3454619793d3a1f743628594e16296ed201a0f
                                 </div>
                             ))
                         ) : (
@@ -162,5 +215,9 @@ function ProductDetails() {
         </div>
     );
 }
+<<<<<<< HEAD
 
 export default ProductDetails;
+=======
+export default ProductDetails;
+>>>>>>> 3a3454619793d3a1f743628594e16296ed201a0f

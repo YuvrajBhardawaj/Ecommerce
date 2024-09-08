@@ -14,7 +14,10 @@
     "cookie-parser": "^1.4.6",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
+<<<<<<< HEAD
     "firebase": "^10.13.1",
+=======
+>>>>>>> 3a3454619793d3a1f743628594e16296ed201a0f
     "jsonwebtoken": "^9.0.2",
     "mysql2": "^3.9.7",
     "nodemon": "^3.1.0",

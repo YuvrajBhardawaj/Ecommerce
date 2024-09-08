@@ -1,4 +1,5 @@
 import express from "express";
+<<<<<<< HEAD
 import { verify } from "./auth.js"
 import cookieParser from "cookie-parser";
 import { getCategories, getProductById, getProducts, getCategoryByName, getReviews, loginUser, signUpUser, addCart, getCartItems, addToWishlist, removeFromWishlist, checkIfInWishlist } from "./database.js";
@@ -50,10 +51,29 @@ app.post('/api/product/addCart',async(req,res)=>{
     if(check.success){
         //console.log(check)
         const data = await addCart(check.id,item_id,title,quantity,price,image)
+=======
+import { addCart, signUp, signIn, addReview, getReviews } from "./db.js";
+import { verify } from "./auth.js"
+import cookieParser from "cookie-parser";
+const app=express()
+
+app.use(express.json())
+app.use(cookieParser());
+//app.use(express.urlencoded({extended:true}))
+
+app.post('/api/product/addCart',async(req,res)=>{
+    const {item_id,quantity,price}=req.body
+    const token=req.cookies.token
+    const check=await verify(token)
+    if(check.success){
+        console.log(check)
+        const data = await addCart(check.id,item_id,quantity,price)
+>>>>>>> 3a3454619793d3a1f743628594e16296ed201a0f
         return res.send(data)
     }
     res.send({success:false, message:'Kindly signin inorder to add to cart'})
 })
+<<<<<<< HEAD
 app.post('/api/signup', async (req, res) => {
     const { name, email, phone, address, password, gender } = req.body;
 
@@ -102,6 +122,22 @@ app.post('/api/login', async (req, res) => {
 app.get('/api/check',async(req,res)=>{
     const token=req.cookies.token
     const data=await verify(token)
+=======
+app.post('/api/signup',async(req,res)=>{
+    const { name, email, phone, address, password, gender } = req.body
+    const data = await signUp(name, email, phone, address, password, gender)
+    res.send(data)
+})
+app.post('/api/login',async(req,res)=>{
+    const { email, password } = req.body
+    const data = await signIn(email,password,res)
+    res.send(data)
+})
+app.get('/api/check',async(req,res)=>{
+    const token=req.cookies.token
+    const data=await verify(token)
+    //console.log(data)
+>>>>>>> 3a3454619793d3a1f743628594e16296ed201a0f
     res.send(data)
 })
 app.delete('/api/signout', (req, res) => {
@@ -123,6 +159,7 @@ app.post('/api/reviews',async(req,res)=>{
 app.get('/api/reviews/:id',async(req,res)=>{
     const {id} = req.params
     const data = await getReviews(id)
+<<<<<<< HEAD
     //console.log(data)
     res.send(data)
 })
@@ -176,6 +213,10 @@ app.get('/api/wishlist/check/:item_id', async (req, res) => {
     }
     res.send({ success: false, message: 'Kindly sign in to check wishlist' });
 });
+=======
+    res.send(data)
+})
+>>>>>>> 3a3454619793d3a1f743628594e16296ed201a0f
 app.listen(3000,()=>{
     console.log("Server running at port 3000")
 })

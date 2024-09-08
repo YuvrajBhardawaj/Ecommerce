@@ -1,10 +1,16 @@
+<<<<<<< HEAD
 import React, { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import axios from 'axios';
+=======
+import React, { useEffect, useState } from 'react'
+import { Link, useParams } from 'react-router-dom';
+>>>>>>> 3a3454619793d3a1f743628594e16296ed201a0f
 
 function Category() {
     const [items, setItems] = useState([]);
     const { id } = useParams();
+<<<<<<< HEAD
 
     useEffect(() => {
         axios.get(`/api/category/${id}`)
@@ -13,6 +19,16 @@ function Category() {
             })
             .catch(error => console.error('Error fetching data:', error));
     }, [id]);
+=======
+    useEffect(() => {
+        fetch(`https://fakestoreapi.com/products/category/${id}`)
+            .then(res => res.json())
+            .then(data => {
+                setItems(data);
+            })
+            .catch(error => console.error('Error fetching data:', error));
+    },[id]);
+>>>>>>> 3a3454619793d3a1f743628594e16296ed201a0f
 
     return (
         <div className="container">
@@ -36,4 +52,8 @@ function Category() {
     );
 }
 
+<<<<<<< HEAD
 export default Category;
+=======
+export default Category
+>>>>>>> 3a3454619793d3a1f743628594e16296ed201a0f

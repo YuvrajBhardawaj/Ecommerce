@@ -6,10 +6,17 @@ function Home() {
     const [items, setItems] = useState([]);
 
     useEffect(() => {
+<<<<<<< HEAD
         fetch('/api/products')
             .then(res => res.json())
             .then(data => {
                 setItems(data.data);
+=======
+        fetch('https://fakestoreapi.com/products')
+            .then(res => res.json())
+            .then(data => {
+                setItems(data);
+>>>>>>> 3a3454619793d3a1f743628594e16296ed201a0f
             })
             .catch(error => console.error('Error fetching data:', error));
     }, []);
