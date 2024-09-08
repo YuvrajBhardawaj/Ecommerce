@@ -1,0 +1,29 @@
+.cart-item-image {
+    max-width: 100%;  /* Ensure the image doesn't overflow horizontally */
+    max-height: 200px;  /* Set a maximum height to prevent overflow */
+    object-fit: cover;  /* Make the image cover the space without distortion */
+  }
+  
+  /* Adjust height for tablets */
+  @media (max-width: 768px) {
+    .cart-item {
+      height: auto; /* Allow the height to be flexible */
+    }
+  }
+  
+  /* Adjust for mobile screens */
+  @media (max-width: 576px) {
+    .cart-item {
+      height: auto; /* Let height adjust based on content */
+    }
+  
+    .cart-item .row {
+      flex-direction: column; /* Stack image and content on mobile */
+    }
+  
+    .cart-item-image {
+      max-width: 100%; /* Ensure image takes full width */
+      max-height: 200px; /* Adjust image height for mobile */
+    }
+  }
+  
