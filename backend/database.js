@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getFirestore, collection, getDocs, doc, getDoc, setDoc, query, where, deleteDoc } from "firebase/firestore";
+import { getFirestore, collection, getDocs, doc, getDoc, setDoc, query, where, deleteDoc, updateDoc } from "firebase/firestore";
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth";
 import jwt from "jsonwebtoken";
 const JWT_SECRET = "MyKey";
@@ -157,16 +157,34 @@ export async function addCart(userId, itemId, title, quantity, price, image) {
     try {
         // Reference to the user's cart document
         const cartDocRef = doc(db, `users/${userId}/cart`, itemId);
-        // Set the cart document with the provided item data
-        await setDoc(cartDocRef, {
-            title:title,
-            image:image,
-            quantity: quantity,
-            price: price,
-            addedAt: new Date(), // Optional: Track when the item was added to the cart
-        });
 
-        return { success: true, message: 'Item added to cart successfully' };
+        // Check if the item already exists in the cart
+        const cartDoc = await getDoc(cartDocRef);
+
+        if (cartDoc.exists()) {
+            // If the item exists, increment the quantity
+            const existingData = cartDoc.data();
+            const newQuantity = existingData.quantity + quantity;
+
+            // Update the quantity
+            await updateDoc(cartDocRef, {
+                quantity: newQuantity,
+                updatedAt: new Date(), // Optional: Track when the item was updated
+            });
+
+            return { success: true, message: 'Cart quantity updated successfully' };
+        } else {
+            // If the item doesn't exist, add it to the cart
+            await setDoc(cartDocRef, {
+                title: title,
+                image: image,
+                quantity: quantity,
+                price: price,
+                addedAt: new Date(), // Optional: Track when the item was added to the cart
+            });
+
+            return { success: true, message: 'Item added to cart successfully' };
+        }
     } catch (error) {
         console.error('Error adding item to cart:', error);
         return { success: false, message: 'Failed to add item to cart' };
@@ -219,5 +237,38 @@ export async function checkIfInWishlist(userId, itemId) {
     } catch (error) {
         console.error('Error checking wishlist:', error);
         return false;
+    }
+}
+export async function deleteCartItem(userId, itemId) {
+    try {
+        // Reference to the cart item document in Firestore
+        const cartItemRef = doc(db, `users/${userId}/cart`, itemId);
+
+        // Delete the document
+        await deleteDoc(cartItemRef);
+
+        return { success: true, message: 'Item removed from cart successfully' };
+    } catch (error) {
+        console.error('Error removing item from cart:', error);
+        return { success: false, message: 'Failed to remove item from cart' };
+    }
+}
+export async function getWishlistItems(userId) {
+    try {
+        // Reference to the user's wishlist collection
+        const wishlistRef = collection(db, `users/${userId}/wishlist`);
+
+        // Fetch all wishlist items
+        const querySnapshot = await getDocs(wishlistRef);
+        
+        // Filter out the item you want to exclude (e.g., wishlistPlaceholder)
+        const wishlistItems = querySnapshot.docs
+            .map(doc => ({ id: doc.id, ...doc.data() })) // Convert docs to objects
+            .filter(item => item.id !== 'wishlistPlaceholder'); // Exclude wishlistPlaceholder
+        
+        return { success: true, wishlistItems };
+    } catch (error) {
+        console.error('Error fetching wishlist items:', error);
+        return { success: false, message: 'Failed to fetch wishlist items' };
     }
 }

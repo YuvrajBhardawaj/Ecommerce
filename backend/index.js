@@ -1,7 +1,7 @@
 import express from "express";
 import { verify } from "./auth.js"
 import cookieParser from "cookie-parser";
-import { getCategories, getProductById, getProducts, getCategoryByName, getReviews, loginUser, signUpUser, addCart, getCartItems, addToWishlist, removeFromWishlist, checkIfInWishlist } from "./database.js";
+import { getCategories, getProductById, getProducts, getCategoryByName, getReviews, loginUser, signUpUser, addCart, getCartItems, addToWishlist, removeFromWishlist, checkIfInWishlist, deleteCartItem, getWishlistItems } from "./database.js";
 
 const app=express()
 app.use(express.json())
@@ -158,7 +158,6 @@ app.post('/api/product/removeWishlist', async (req, res) => {
     const { item_id } = req.body;
     const token = req.cookies.token;
     const check = await verify(token);
-
     if (check.success) {
         const result = await removeFromWishlist(check.id, item_id);
         return res.send(result);
@@ -176,6 +175,41 @@ app.get('/api/wishlist/check/:item_id', async (req, res) => {
     }
     res.send({ success: false, message: 'Kindly sign in to check wishlist' });
 });
+app.delete('/api/cart/:itemId', async (req, res) => {
+    const { itemId } = req.params;
+    const token = req.cookies.token;
+    const check = await verify(token);
+    
+    if (check.success) {
+        // If the token is valid, proceed to delete the cart item
+        const result = await deleteCartItem(check.id, itemId);
+        return res.send(result);
+    }
+    // If token is invalid or user is not signed in
+    res.send({ success: false, message: 'Kindly sign in to remove item from cart' });
+});
+app.get('/api/wishlist', async (req, res) => {
+    try {
+        const token = req.cookies.token;
+        const check = await verify(token);
+
+        if (check.success) {
+            // Fetch the wishlist data for the authenticated user
+            const result = await getWishlistItems(check.id);
+
+            if (result.success) 
+                return res.send({ success: true, wishlist: result.wishlistItems });
+            return res.status(500).send({ success: false, message: 'Failed to retrieve wishlist data' });
+        }
+
+        // If the token is invalid or the user is not authenticated
+        res.status(401).send({ success: false, message: 'Unauthorized access, please sign in' });
+    } catch (error) {
+        console.error('Error fetching wishlist:', error);
+        res.status(500).send({ success: false, message: 'Server error while fetching wishlist' });
+    }
+});
+
 app.listen(3000,()=>{
     console.log("Server running at port 3000")
 })
