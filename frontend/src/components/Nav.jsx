@@ -37,7 +37,7 @@ function Nav() {
     return (
         <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
             <div className="container">
-                <Link className="navbar-brand" to="/">FakeStore</Link>
+                <Link className="navbar-brand" to="/">MyStore</Link>
                 <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                     <span className="navbar-toggler-icon"></span>
                 </button>
@@ -54,6 +54,9 @@ function Nav() {
                             <>
                                 <li>
                                     <Link className="nav-link" to="/cart">Cart</Link>
+                                </li>
+                                <li>
+                                    <Link className="nav-link" to="/wishlist">WishList</Link>
                                 </li>
                                 <li className="nav-item">
                                     <button className="nav-link" onClick={signOut}>Sign Out</button>

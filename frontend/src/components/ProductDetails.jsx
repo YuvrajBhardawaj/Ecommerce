@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
-import heart from '../assets/heart_.png'
+import heart from '../assets/heart_.png';
+
 function ProductDetails() {
     const { id } = useParams();
     const [product, setProduct] = useState(null);
@@ -9,9 +10,11 @@ function ProductDetails() {
     const [reviewText, setReviewText] = useState(""); // State for review text
     const [reviews, setReviews] = useState([]);
     const [isInWishlist, setIsInWishlist] = useState(false);
+    const [loading, setLoading] = useState(false); // Loading state for wishlist actions
+    const [wishlistLoading, setWishlistLoading] = useState(true); // Loading state for wishlist check
 
     useEffect(() => {
-        // Fetch product details and reviews
+        // Fetch product details, reviews, and wishlist status
         const fetchProductAndReviews = async () => {
             try {
                 const productResponse = await axios.get(`/api/product/${id}`);
@@ -21,12 +24,15 @@ function ProductDetails() {
                 if (reviewsResponse.data.success) {
                     setReviews(reviewsResponse.data.reviews);
                 }
+
                 const wishlistResponse = await axios.get(`/api/wishlist/check/${id}`);
                 if (wishlistResponse.data.success) {
                     setIsInWishlist(wishlistResponse.data.isInWishlist);
                 }
+                setWishlistLoading(false); // Stop loading after wishlist status is fetched
             } catch (error) {
                 console.error('Error fetching product details or reviews:', error);
+                setWishlistLoading(false);
             }
         };
 
@@ -43,7 +49,7 @@ function ProductDetails() {
     };
 
     const handleAddToCart = () => {
-        axios.post('/api/product/addCart', { item_id: id, title:product.title, quantity, price: product.price, image:product.image })
+        axios.post('/api/product/addCart', { item_id: id, title: product.title, quantity, price: product.price, image: product.image })
             .then(res => {
                 if (res.data.success) {
                     alert('Product added to cart');
@@ -86,21 +92,27 @@ function ProductDetails() {
                 console.error('Error submitting review:', error);
             });
     };
+
     const handleAddToWishlist = () => {
+        setLoading(true); // Start loading during the wishlist action
+
         const apiEndpoint = isInWishlist ? '/api/product/removeWishlist' : '/api/product/addWishlist';
+        
         axios.post(apiEndpoint, { item_id: id, title: product.title, price: product.price, image: product.image })
             .then(res => {
+                setLoading(false); // Stop loading after the wishlist action completes
                 if (res.data.success) {
-                    setIsInWishlist(!isInWishlist); // Toggle state
-                    alert(isInWishlist ? 'Product removed from wishlist' : 'Product added to wishlist');
+                    setIsInWishlist(!isInWishlist); // Toggle wishlist status
                 } else {
                     alert(res.data.message);
                 }
             })
             .catch(error => {
+                setLoading(false);
                 console.error('Error updating wishlist:', error);
             });
     };
+
     return (
         <div className="container">
             <div className="row">
@@ -126,7 +138,12 @@ function ProductDetails() {
                     <div className="btn-group" role="group" aria-label="Product Actions" style={{height:'40px'}}>
                         <button type="button" className="btn btn-primary" onClick={handleAddToCart}>Add to Cart</button>
                         <button type="button" className="btn btn-success" onClick={handleBuyNow}>Buy Now</button>
-                        {isInWishlist?<button type="button" className="btn bg-transparent" onClick={handleAddToWishlist}>❤️</button>:<button type="button" className="btn bg-transparent" onClick={handleAddToWishlist}><img src={heart} alt="" style={{height:'100%'}}/></button>}
+                        <button type="button" className="btn bg-transparent" onClick={handleAddToWishlist} disabled={loading || wishlistLoading}>
+                            {wishlistLoading || loading
+                                ? 'Loading...' // Show loading while waiting for wishlist actions or status
+                                : (isInWishlist ? '❤️' : <img src={heart} alt="Add to Wishlist" style={{ height: '100%' }} />)
+                            }
+                        </button>
                     </div>
                     <div className="review-form mt-4">
                         <h4>Submit a Review</h4>
@@ -150,7 +167,7 @@ function ProductDetails() {
                         {reviews.length > 0 ? (
                             reviews.map((review, index) => (
                                 <div key={index} className="review">
-                                    <p>{index + 1}. {review.comment}</p>
+                                    <p>{index + 1}. {review.review}</p>
                                 </div>
                             ))
                         ) : (
