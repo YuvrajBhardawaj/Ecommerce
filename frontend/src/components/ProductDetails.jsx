@@ -1,22 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
-<<<<<<< HEAD
-import heart from '../assets/heart_.png'
-=======
+import heart from '../assets/heart_.png';
 
->>>>>>> 3a3454619793d3a1f743628594e16296ed201a0f
 function ProductDetails() {
     const { id } = useParams();
     const [product, setProduct] = useState(null);
     const [quantity, setQuantity] = useState(1);
     const [reviewText, setReviewText] = useState(""); // State for review text
     const [reviews, setReviews] = useState([]);
-<<<<<<< HEAD
     const [isInWishlist, setIsInWishlist] = useState(false);
+    const [loading, setLoading] = useState(false); // Loading state for wishlist actions
+    const [wishlistLoading, setWishlistLoading] = useState(true); // Loading state for wishlist check
 
     useEffect(() => {
-        // Fetch product details and reviews
+        // Fetch product details, reviews, and wishlist status
         const fetchProductAndReviews = async () => {
             try {
                 const productResponse = await axios.get(`/api/product/${id}`);
@@ -26,35 +24,20 @@ function ProductDetails() {
                 if (reviewsResponse.data.success) {
                     setReviews(reviewsResponse.data.reviews);
                 }
+
                 const wishlistResponse = await axios.get(`/api/wishlist/check/${id}`);
                 if (wishlistResponse.data.success) {
                     setIsInWishlist(wishlistResponse.data.isInWishlist);
                 }
+                setWishlistLoading(false); // Stop loading after wishlist status is fetched
             } catch (error) {
                 console.error('Error fetching product details or reviews:', error);
+                setWishlistLoading(false);
             }
         };
 
         fetchProductAndReviews();
     }, [id]);
-=======
-    useEffect(() => {
-        fetch(`https://fakestoreapi.com/products/${id}`)
-            .then(res => res.json())
-            .then(data => {
-                setProduct(data);
-                axios.get(`/api/reviews/${id}`)
-                .then(response => {
-                    console.log(response.data)
-                    if(response.data.success)
-                        //console.log(response.data)
-                        setReviews(response.data.reviews);
-                })
-                .catch(error => console.error('Error fetching product reviews:', error));
-            })
-            .catch(error => console.error('Error fetching product details:', error));
-    }, [id,reviews]);
->>>>>>> 3a3454619793d3a1f743628594e16296ed201a0f
 
     if (!product) {
         return <div>Loading...</div>;
@@ -66,11 +49,7 @@ function ProductDetails() {
     };
 
     const handleAddToCart = () => {
-<<<<<<< HEAD
-        axios.post('/api/product/addCart', { item_id: id, title:product.title, quantity, price: product.price, image:product.image })
-=======
-        axios.post('/api/product/addCart', { item_id: id, quantity, price: product.price })
->>>>>>> 3a3454619793d3a1f743628594e16296ed201a0f
+        axios.post('/api/product/addCart', { item_id: id, title: product.title, quantity, price: product.price, image: product.image })
             .then(res => {
                 if (res.data.success) {
                     alert('Product added to cart');
@@ -97,53 +76,58 @@ function ProductDetails() {
         setReviewText(event.target.value);
     };
 
-    const handleReviewSubmit = (event) => {
+    const handleReviewSubmit = async (event) => {
         event.preventDefault();
-<<<<<<< HEAD
-        axios.post('/api/reviews', { item_id: id, review: reviewText })
-            .then(response => {
-                if (response.data.success) {
-                    alert('Review submitted successfully');
-                    setReviewText(""); // Clear the review input field
-                    setReviews(prevReviews => [...prevReviews, { review: reviewText }]); // Update reviews state
-                } else {
-                    alert(response.data.message);
-=======
-        axios.post('/api/reviews', { item_id: id, review: reviewText }) 
-            .then(response => {
-                console.log(response)
-                if(response.data.success){
-                    alert('Review submitted successfully');
-                    setReviewText(""); 
+        
+        try {
+            const response = await axios.post('/api/reviews', { item_id: id, review: reviewText });
+            
+            if (response.data.success) {
+                //alert('Review submitted successfully');
+                
+                // Clear the review input field
+                setReviewText("");
+                
+                // Fetch latest product and reviews data after submitting the review
+                const reviewsResponse = await axios.get(`/api/reviews/${id}`);
+                if (reviewsResponse.data.success) {
+                    setReviews(reviewsResponse.data.reviews); // Manually update the reviews state
                 }
-                else{
-                    alert(response.data.message)
->>>>>>> 3a3454619793d3a1f743628594e16296ed201a0f
-                }
-            })
-            .catch(error => {
-                console.error('Error submitting review:', error);
-            });
+            }
+        } catch (error) {
+            console.error('Error submitting review:', error);
+        }
     };
-<<<<<<< HEAD
+
     const handleAddToWishlist = () => {
+        setLoading(true); // Start loading during the wishlist action
+
         const apiEndpoint = isInWishlist ? '/api/product/removeWishlist' : '/api/product/addWishlist';
+        
         axios.post(apiEndpoint, { item_id: id, title: product.title, price: product.price, image: product.image })
             .then(res => {
+                setLoading(false); // Stop loading after the wishlist action completes
                 if (res.data.success) {
-                    setIsInWishlist(!isInWishlist); // Toggle state
-                    alert(isInWishlist ? 'Product removed from wishlist' : 'Product added to wishlist');
+                    setIsInWishlist(!isInWishlist); // Toggle wishlist status
                 } else {
                     alert(res.data.message);
                 }
             })
             .catch(error => {
+                setLoading(false);
                 console.error('Error updating wishlist:', error);
             });
     };
-=======
 
->>>>>>> 3a3454619793d3a1f743628594e16296ed201a0f
+    const formatDate = (timestamp) => {
+        if (timestamp && timestamp.seconds) {
+            // Convert Firestore timestamp (seconds + nanoseconds) to JavaScript Date
+            const date = new Date(timestamp.seconds * 1000); // Firestore timestamp is in seconds, JavaScript Date expects milliseconds
+            return date.toLocaleString(); // Format the date and time for better readability
+        }
+        return "Invalid date";
+    };
+
     return (
         <div className="container">
             <div className="row">
@@ -166,16 +150,15 @@ function ProductDetails() {
                             onChange={handleChangeQuantity}
                         />
                     </div>
-<<<<<<< HEAD
                     <div className="btn-group" role="group" aria-label="Product Actions" style={{height:'40px'}}>
                         <button type="button" className="btn btn-primary" onClick={handleAddToCart}>Add to Cart</button>
                         <button type="button" className="btn btn-success" onClick={handleBuyNow}>Buy Now</button>
-                        {isInWishlist?<button type="button" className="btn bg-transparent" onClick={handleAddToWishlist}>❤️</button>:<button type="button" className="btn bg-transparent" onClick={handleAddToWishlist}><img src={heart} alt="" style={{height:'100%'}}/></button>}
-=======
-                    <div className="btn-group" role="group" aria-label="Add to Cart">
-                        <button type="button" className="btn btn-primary" onClick={handleAddToCart}>Add to Cart</button>
-                        <button type="button" className="btn btn-success" onClick={handleBuyNow}>Buy Now</button>
->>>>>>> 3a3454619793d3a1f743628594e16296ed201a0f
+                        <button type="button" className="btn bg-transparent" onClick={handleAddToWishlist} disabled={loading || wishlistLoading}>
+                            {wishlistLoading || loading
+                                ? 'Loading...' // Show loading while waiting for wishlist actions or status
+                                : (isInWishlist ? '❤️' : <img src={heart} alt="Add to Wishlist" style={{ height: '100%' }} />)
+                            }
+                        </button>
                     </div>
                     <div className="review-form mt-4">
                         <h4>Submit a Review</h4>
@@ -197,13 +180,10 @@ function ProductDetails() {
                     <div className="previous-reviews mt-4">
                         <h4>Previous Reviews</h4>
                         {reviews.length > 0 ? (
-                            reviews.map((review, index) => (
-                                <div key={index} className="review">
-<<<<<<< HEAD
-                                    <p>{index + 1}. {review.comment}</p>
-=======
-                                    <p>{index+1}. {review.review}</p>
->>>>>>> 3a3454619793d3a1f743628594e16296ed201a0f
+                            reviews.map((data, index) => (
+                                <div key={index} className="review border border-secondary p-2 mb-3">
+                                    <p>{index + 1}. {data.comment.review}</p>
+                                    <p><small>Submitted on: {formatDate(data.comment.createdAt)}</small></p>
                                 </div>
                             ))
                         ) : (
@@ -215,9 +195,5 @@ function ProductDetails() {
         </div>
     );
 }
-<<<<<<< HEAD
 
 export default ProductDetails;
-=======
-export default ProductDetails;
->>>>>>> 3a3454619793d3a1f743628594e16296ed201a0f

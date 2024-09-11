@@ -7,12 +7,9 @@ import Nav from './components/Nav';
 import Category from './components/Category';
 import SignIn from './components/SignIn'
 import SignUp from './components/SignUp';
-<<<<<<< HEAD
 import Cart from './components/Cart';
+import Wishlist from './components/WishList';
 
-=======
-SignUp
->>>>>>> 3a3454619793d3a1f743628594e16296ed201a0f
 function App() {
     return (
       <div>
@@ -23,10 +20,8 @@ function App() {
         <Route path='/category/:id' element={<Category/>}/>
         <Route path='/signin' element={<SignIn/>}/>
         <Route path='/signup' element={<SignUp/>}/>
-<<<<<<< HEAD
         <Route path='/cart' element={<Cart/>}></Route>
-=======
->>>>>>> 3a3454619793d3a1f743628594e16296ed201a0f
+        <Route path='/wishlist' element={<Wishlist/>}></Route>
       </Routes>
       </div>
     );

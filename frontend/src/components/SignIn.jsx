@@ -8,11 +8,7 @@ function SignIn() {
         if(email.length>0 && password.length>0){
             axios.post('/api/login',{email,password})
             .then((res)=>{
-<<<<<<< HEAD
                 console.log(res.data.message)
-=======
-                console.log(res.data)
->>>>>>> 3a3454619793d3a1f743628594e16296ed201a0f
                 if(res.data.success){
                     console.log(res.data.message)
                     window.location.href = '/';

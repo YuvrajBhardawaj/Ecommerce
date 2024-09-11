@@ -1,4 +1,4 @@
-.cart-item-image {
+.cart-item-image, .wishlist-item-image {
     max-width: 100%;  /* Ensure the image doesn't overflow horizontally */
     max-height: 200px;  /* Set a maximum height to prevent overflow */
     object-fit: cover;  /* Make the image cover the space without distortion */

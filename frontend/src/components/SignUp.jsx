@@ -20,7 +20,12 @@ function SignUp() {
                         window.location.href = '/signin';
                     }
                 })
-                .catch((err) => console.log(err));
+                .catch((err) =>{
+                    if(err.response.data.message==="auth/email-already-in-use")
+                        alert("The email is already in use by another account.")
+                    else
+                        console.log(err)
+                });
         }
     }
 
