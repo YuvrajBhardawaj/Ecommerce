@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import heart from '../assets/heart_.png';
-
+import { useNavigate } from 'react-router-dom';
 function ProductDetails() {
     const { id } = useParams();
     const [product, setProduct] = useState(null);
@@ -12,12 +12,14 @@ function ProductDetails() {
     const [isInWishlist, setIsInWishlist] = useState(false);
     const [loading, setLoading] = useState(false); // Loading state for wishlist actions
     const [wishlistLoading, setWishlistLoading] = useState(true); // Loading state for wishlist check
+    const navigate = useNavigate();
 
     useEffect(() => {
         // Fetch product details, reviews, and wishlist status
         const fetchProductAndReviews = async () => {
             try {
                 const productResponse = await axios.get(`/api/product/${id}`);
+                // console.log(productResponse.data.data)
                 setProduct(productResponse.data.data);
 
                 const reviewsResponse = await axios.get(`/api/reviews/${id}`);
@@ -59,16 +61,6 @@ function ProductDetails() {
             })
             .catch(error => {
                 console.error('Error adding product to cart:', error);
-            });
-    };
-
-    const handleBuyNow = () => {
-        axios.post('/api/product/BuyNow', { productId: id, quantity })
-            .then(response => {
-                console.log('Product bought:', response.data);
-            })
-            .catch(error => {
-                console.error('Error buying product:', error);
             });
     };
 
@@ -127,12 +119,19 @@ function ProductDetails() {
         }
         return "Invalid date";
     };
-
+    const handleBuyNow = () => {
+        navigate('/checkout', {
+            state: {
+                product: product,  // Pass the product details via state
+                quantity: quantity
+            }
+        });
+    };
     return (
         <div className="container">
             <div className="row">
                 <div className="col-md-6">
-                    <img src={product.image} alt={product.title} className="img-fluid product-image" />
+                    <img src={product.image} alt={product.title} className="img-fluid" />
                 </div>
                 <div className="col-md-6">
                     <h2>{product.title}</h2>
