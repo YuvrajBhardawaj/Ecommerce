@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getFirestore, collection, getDocs, doc, getDoc, setDoc, query, where, deleteDoc, updateDoc } from "firebase/firestore";
+import { getFirestore, collection, getDocs, doc, getDoc, setDoc, query, where, deleteDoc, updateDoc, addDoc } from "firebase/firestore";
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth";
 import jwt from "jsonwebtoken";
 const JWT_SECRET = "MyKey";
@@ -290,5 +290,36 @@ export async function addReview(userId, productId, reviewText) {
     } catch (error) {
         console.error('Error adding review:', error);
         return { success: false, message: 'Failed to add review' };
+    }
+}
+export async function fetchUserDetails(userId) {
+    try {
+        const userRef = doc(db, 'users', userId);
+        const userDoc = await getDoc(userRef);
+
+        if (userDoc.exists()) {
+            const userData = userDoc.data();
+            const { name, phone, address } = userData;
+            return { success: true, name, phone, address };
+        } else {
+            return { success: false, message: 'User not found' };
+        }
+    } catch (error) {
+        console.error('Error fetching user details:', error);
+        return { success: false, message: 'Failed to fetch user details' };
+    }
+}
+export async function addOrder(userId, orderDetails) {
+    try {
+        // Reference to the user's orders collection
+        if(!userId)
+            return {success:false, message: "Kindly sign in to place order"}
+        const ordersRef = collection(db, `users/${userId}/orders`);
+        // Add a new document to the orders collection
+        const docRef = await addDoc(ordersRef, orderDetails);
+        return { success: true, message: 'Order Placed Successfully', orderId: docRef.id };
+    } catch (error) {
+        console.error('Error adding order:', error);
+        return { success: false, message: 'Failed to add order' };
     }
 }
