@@ -211,6 +211,8 @@ app.get('/api/wishlist', async (req, res) => {
 app.get('/api/userDetails', async (req, res) => {
     try {
         const token = req.cookies.token;
+        if(!token)
+            return res.send({success:false, message:"Please login first"})
         const check = await verify(token);
 
         if (check.success) {
