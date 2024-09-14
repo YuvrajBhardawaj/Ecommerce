@@ -86,6 +86,8 @@ function ProductDetails() {
                     setReviews(reviewsResponse.data.reviews); // Manually update the reviews state
                 }
             }
+            else
+                alert(response.data.message)
         } catch (error) {
             console.error('Error submitting review:', error);
         }
@@ -119,13 +121,24 @@ function ProductDetails() {
         }
         return "Invalid date";
     };
-    const handleBuyNow = () => {
-        navigate('/checkout', {
-            state: {
-                product: product,  // Pass the product details via state
-                quantity: quantity
+    const handleBuyNow = async () => {
+        try {
+            const response = await axios.get('/api/userDetails');
+            if (response.data.success) {
+                const fetchedUser = response.data.user;
+                navigate('/checkout', {
+                    state: {
+                        user: fetchedUser,  
+                        product: product,    
+                        quantity: quantity
+                    }
+                });
+            } else {
+                alert("Sign in First");
             }
-        });
+        } catch (error) {
+            console.error('Error fetching user data:', error);
+        }
     };
     return (
         <div className="container">

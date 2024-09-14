@@ -1,56 +1,36 @@
 import { useLocation } from 'react-router-dom';
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 function Checkout() {
     const { state } = useLocation();
-    const { product, quantity } = state || {};
-    const [user, setUser] = useState({ name: '', phone: '', address: '' });
+    const { user, product, quantity } = state || {};
+    const [userData, setUser] = useState(user);
     const [totalPrice, setTotalPrice] = useState(product ? product.price * quantity : 0);
-    const [loading, setLoading] = useState(true);
+    // const [loading, setLoading] = useState(true);
     const [quant, setQuant] = useState(quantity);
-
-    useEffect(() => {
-        fetchUserData();
-    }, []);
+    const navigate = useNavigate();
 
     useEffect(() => {
         setTotalPrice(product.price * quant);
-    }, [quant, product]);
-
-    const fetchUserData = async () => {
-        try {
-            const response = await axios.get('/api/userDetails');
-            if (response.data.success) {
-                setUser(response.data.user);
-                setLoading(false);
-            }
-        } catch (error) {
-            console.error('Error fetching user data:', error);
-            setLoading(false);
-        }
-    };
-
-    if (loading) {
-        return <div className="text-center">Loading...</div>;
-    }
+    }, [quant, product]);    
 
     const handleCheckout = async () => {
         const orderDetails = {
-            name: user.name,
-            phone: user.phone,
-            address: user.address,
+            name: userData.name,
+            phone: userData.phone,
+            address: userData.address,
             productTitle: product.title,
             productImg: product.image,
             quantity: quant,
             totalPrice,
         };
-
         try {
             const response = await axios.post('/api/checkout', orderDetails);
             if (response.data.success) {
-                console.log();
-                // Optionally redirect to a success page or show a success message
+                alert("Order Placed")
+                navigate('/')
             }
         } catch (error) {
             alert(error.response.data.message+". Try signing in again")
@@ -63,7 +43,10 @@ function Checkout() {
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        setUser({ ...user, [name]: value });
+        setUser((prevUserData) => ({
+            ...prevUserData,
+            [name]: value,
+        }));
     };
 
     return (
@@ -81,7 +64,7 @@ function Checkout() {
                                     id="name"
                                     name="name"
                                     className="form-control"
-                                    value={user.name}
+                                    value={userData.name}
                                     onChange={handleInputChange}
                                     placeholder="Enter your name"
                                 />
@@ -93,7 +76,7 @@ function Checkout() {
                                     id="phone"
                                     name="phone"
                                     className="form-control"
-                                    value={user.phone}
+                                    value={userData.phone}
                                     onChange={handleInputChange}
                                     placeholder="Enter your phone number"
                                 />
@@ -104,7 +87,7 @@ function Checkout() {
                                     id="address"
                                     name="address"
                                     className="form-control"
-                                    value={user.address}
+                                    value={userData.address}
                                     onChange={handleInputChange}
                                     placeholder="Enter your address"
                                 />
