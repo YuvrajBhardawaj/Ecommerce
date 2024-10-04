@@ -13,7 +13,7 @@ function Nav() {
 
     const fetchCategories = async () => {
         try {
-            const response = await axios.get('/api/categories');
+            const response = await axios.get('https://ecommerce-backend-sodu.onrender.com//api/categories');
             if (response.data.success) {
                 setCategories(response.data.data);
             }
