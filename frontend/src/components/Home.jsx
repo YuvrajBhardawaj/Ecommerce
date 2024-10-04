@@ -6,14 +6,13 @@ function Home() {
     const [items, setItems] = useState([]);
 
     useEffect(() => {
-        axios.get('https://ecommerce-backend-sodu.onrender.com/api/products')
-            .then(res => console.log(res))
-            .then(data => {
-                setItems(data.data);
-            })
-            .catch(error => console.error('Error fetching data:', error));
-    }, []);
-
+    axios.get('https://ecommerce-backend-sodu.onrender.com/api/products')
+        .then(res => {
+            console.log(res.data);  // Log the correct response data
+            setItems(res.data.data); // Assuming your API response has a `data` property that holds the products
+        })
+        .catch(error => console.error('Error fetching data:', error));
+}, []);
     return (
         <div className="container">
             <div className="row row-cols-1 row-cols-md-3">
