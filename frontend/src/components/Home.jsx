@@ -7,9 +7,9 @@ function Home() {
 
     useEffect(() => {
         axios.get('https://ecommerce-backend-sodu.onrender.com/api/products')
-            .then(res => {
-                console.log(res.data);
-                setItems(res.data.data);
+            .then(res => res.json())
+            .then(data => {
+                setItems(data.data);
             })
             .catch(error => console.error('Error fetching data:', error));
     }, []);
