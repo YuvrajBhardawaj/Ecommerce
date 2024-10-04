@@ -12,7 +12,7 @@ function Wishlist() {
         // Fetch all wishlist items
         const fetchWishlistItems = async () => {
             try {
-                const response = await axios.get('/api/wishlist');
+                const response = await axios.get('https://ecommerce-backend-sodu.onrender.com/api/wishlist');
                 if (response.data.success) {
                     setWishlistItems(response.data.wishlist); // Update state with fetched wishlist items
                 } else {
@@ -29,7 +29,7 @@ function Wishlist() {
 
     const handleRemoveFromWishlist = (itemId) => {
         // Remove item from wishlist
-        axios.post('/api/product/removeWishlist', { item_id: itemId })
+        axios.post('https://ecommerce-backend-sodu.onrender.com/api/product/removeWishlist', { item_id: itemId })
             .then(res => {
                 if (res.data.success) {
                     setWishlistItems(prevItems => prevItems.filter(item => item.id !== itemId)); // Update state after removal
