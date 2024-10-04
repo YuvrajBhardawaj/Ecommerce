@@ -6,7 +6,7 @@ function Home() {
     const [items, setItems] = useState([]);
 
     useEffect(() => {
-        fetch('https://ecommerce-backend-sodu.onrender.com//api/products')
+        fetch('https://ecommerce-backend-sodu.onrender.com/api/products')
             .then(res => res.json())
             .then(data => {
                 console.log('Fetched data:', data);
@@ -29,7 +29,7 @@ function Home() {
                             </div>
                             <div className="card-footer">
                                 <p className="card-text text-muted">Price: ${item.price}</p>
-                                <Link to={`/product/${item.id}`} className="btn btn-primary">View Details</Link>
+                                <Link to={`https://ecommerce-backend-sodu.onrender.com/product/${item.id}`} className="btn btn-primary">View Details</Link>
                             </div>
                         </div>
                     </div>
