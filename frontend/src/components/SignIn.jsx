@@ -6,7 +6,7 @@ function SignIn() {
     function signIn(e) {
         e.preventDefault();
         if(email.length>0 && password.length>0){
-            axios.post('/api/login',{email,password})
+            axios.post('https://ecommerce-backend-sodu.onrender.com/api/login',{email,password})
             .then((res)=>{
                 console.log(res.data.message)
                 if(res.data.success){
