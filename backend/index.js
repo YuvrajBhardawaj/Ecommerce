@@ -2,11 +2,17 @@ import express from "express";
 import { verify } from "./auth.js"
 import cookieParser from "cookie-parser";
 import { getCategories, getProductById, getProducts, getCategoryByName, getReviews, loginUser, signUpUser, addCart, getCartItems, addToWishlist, removeFromWishlist, checkIfInWishlist, deleteCartItem, getWishlistItems, addReview, fetchUserDetails, addOrder } from "./database.js";
-
+import cors from 'cors';
 const app=express()
 app.use(express.json())
 app.use(cookieParser());
 //app.use(express.urlencoded({extended:true}))
+app.use(cors({
+  origin: 'https://ecommerce-lime-tau-86.vercel.app',  // Allow requests from your frontend domain
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  credentials: true, // if you need to handle cookies
+}));
+
 app.get('/api/categories',async(req,res)=>{
     const categories= await getCategories();
     if(categories.success)
