@@ -6,8 +6,8 @@ function Home() {
     const [items, setItems] = useState([]);
 
     useEffect(() => {
-        fetch('https://ecommerce-backend-sodu.onrender.com/api/products')
-            .then(res => res.json())
+        axios.get('https://ecommerce-backend-sodu.onrender.com/api/products')
+            .then(res => console.log(res))
             .then(data => {
                 setItems(data.data);
             })
