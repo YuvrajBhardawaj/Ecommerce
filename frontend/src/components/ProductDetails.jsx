@@ -18,16 +18,16 @@ function ProductDetails() {
         // Fetch product details, reviews, and wishlist status
         const fetchProductAndReviews = async () => {
             try {
-                const productResponse = await axios.get(`/api/product/${id}`);
+                const productResponse = await axios.get(`https://ecommerce-backend-sodu.onrender.com/api/product/${id}`);
                 // console.log(productResponse.data.data)
                 setProduct(productResponse.data.data);
 
-                const reviewsResponse = await axios.get(`/api/reviews/${id}`);
+                const reviewsResponse = await axios.get(`https://ecommerce-backend-sodu.onrender.com/api/reviews/${id}`);
                 if (reviewsResponse.data.success) {
                     setReviews(reviewsResponse.data.reviews);
                 }
 
-                const wishlistResponse = await axios.get(`/api/wishlist/check/${id}`);
+                const wishlistResponse = await axios.get(`https://ecommerce-backend-sodu.onrender.com/api/wishlist/check/${id}`);
                 if (wishlistResponse.data.success) {
                     setIsInWishlist(wishlistResponse.data.isInWishlist);
                 }
@@ -96,7 +96,7 @@ function ProductDetails() {
     const handleAddToWishlist = () => {
         setLoading(true); // Start loading during the wishlist action
 
-        const apiEndpoint = isInWishlist ? '/api/product/removeWishlist' : '/api/product/addWishlist';
+        const apiEndpoint = isInWishlist ? 'https://ecommerce-backend-sodu.onrender.com/api/product/removeWishlist' : 'https://ecommerce-backend-sodu.onrender.com/api/product/addWishlist';
         
         axios.post(apiEndpoint, { item_id: id, title: product.title, price: product.price, image: product.image })
             .then(res => {
@@ -123,7 +123,7 @@ function ProductDetails() {
     };
     const handleBuyNow = async () => {
         try {
-            const response = await axios.get('/api/userDetails');
+            const response = await axios.get('https://ecommerce-backend-sodu.onrender.com/api/userDetails');
             if (response.data.success) {
                 const fetchedUser = response.data.user;
                 navigate('/checkout', {
