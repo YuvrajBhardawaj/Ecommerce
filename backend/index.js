@@ -7,7 +7,12 @@ const app=express()
 app.use(express.json())
 app.use(cookieParser());
 //app.use(express.urlencoded({extended:true}))
-app.use(cors());
+app.use(cors({
+  origin: 'https://ecommerce-lime-tau-86.vercel.app',  // Allow requests from your frontend domain
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  credentials: true, // if you need to handle cookies
+}));
+
 
 
 app.get('/api/categories',async(req,res)=>{
