@@ -23,13 +23,13 @@ function Nav() {
     };
 
     const checkLoginStatus = () => {
-        axios.get('https://ecommerce-backend-sodu.onrender.com/api/check')
+        axios.get('https://ecommerce-backend-sodu.onrender.com/api/check', { withCredentials: true })
             .then((res) => setIsLoggedIn(res.data.success))
             .catch(err => console.log(err));
     };
 
     const signOut = () => {
-        axios.delete('https://ecommerce-backend-sodu.onrender.com/api/signout')
+        axios.delete('https://ecommerce-backend-sodu.onrender.com/api/signout', { withCredentials: true })
             .then(() => setIsLoggedIn(false))
             .catch(err => console.log(err));
     };
