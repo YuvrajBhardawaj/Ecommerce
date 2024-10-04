@@ -112,10 +112,11 @@ app.get('/api/check',async(req,res)=>{
     res.send(data)
 })
 app.delete('/api/signout', (req, res) => {
-    // Clear the token cookie by setting an expired date
-    res.clearCookie('token');
-    res.send({ success: true, message: 'User signed out successfully' });
+    // Clear the cookie by setting it to an empty value and past expiration
+    res.clearCookie('token', { httpOnly: true, sameSite: 'None', secure: true });
+    res.status(200).send({ success: true, message: 'Sign out successful' });
 });
+
 app.post('/api/reviews',async(req,res)=>{
     const token=req.cookies.token
     const data=await verify(token)
