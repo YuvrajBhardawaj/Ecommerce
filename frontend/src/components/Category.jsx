@@ -7,7 +7,7 @@ function Category() {
     const { id } = useParams();
 
     useEffect(() => {
-        axios.get(`https://ecommerce-backend-sodu.onrender.com/api/category/${id}`)
+        axios.get(`/api/category/${id}`)
             .then(res => {
                 setItems(res.data.data);
             })

@@ -13,7 +13,7 @@ function Nav() {
 
     const fetchCategories = async () => {
         try {
-            const response = await axios.get('https://ecommerce-backend-sodu.onrender.com/api/categories');
+            const response = await axios.get('/api/categories');
             if (response.data.success) {
                 setCategories(response.data.data);
             }
@@ -23,13 +23,13 @@ function Nav() {
     };
 
     const checkLoginStatus = () => {
-        axios.get('https://ecommerce-backend-sodu.onrender.com/api/check')
+        axios.get('/api/check')
             .then((res) => setIsLoggedIn(res.data.success))
             .catch(err => console.log(err));
     };
 
     const signOut = () => {
-        axios.delete('https://ecommerce-backend-sodu.onrender.com/api/signout')
+        axios.delete('/api/signout')
             .then(() => setIsLoggedIn(false))
             .catch(err => console.log(err));
     };
