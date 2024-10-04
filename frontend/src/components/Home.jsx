@@ -9,6 +9,7 @@ function Home() {
         fetch('https://ecommerce-backend-sodu.onrender.com/api/products')
             .then(res => res.json())
             .then(data => {
+                console.log('Fetched data:', data);
                 setItems(data.data);
             })
             .catch(error => console.error('Error fetching data:', error));
