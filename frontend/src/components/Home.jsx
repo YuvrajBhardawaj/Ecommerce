@@ -6,7 +6,7 @@ function Home() {
     const [items, setItems] = useState([]);
 
     useEffect(() => {
-        fetch('https://ecommerce-backend-sodu.onrender.com/api/products')
+        fetch('https://ecommerce-backend-sodu.onrender.com//api/products')
             .then(res => res.json())
             .then(data => {
                 console.log('Fetched data:', data);
