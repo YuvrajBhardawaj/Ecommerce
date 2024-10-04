@@ -15,7 +15,7 @@ import Checkout from './components/Checkout';
 function App() {
     return (
       <div>
-        <Nav/>      
+{/*         <Nav/>       */}
       <Routes>
         <Route path="/product/:id" element={<ProductDetails/>}/>
         <Route path="/" element={<Home/>}/>
