@@ -29,7 +29,7 @@ function Home() {
                             </div>
                             <div className="card-footer">
                                 <p className="card-text text-muted">Price: ${item.price}</p>
-                                <Link to={`https://ecommerce-backend-sodu.onrender.com/product/${item.id}`} className="btn btn-primary">View Details</Link>
+                                <Link to={`/product/${item.id}`} className="btn btn-primary">View Details</Link>
                             </div>
                         </div>
                     </div>
