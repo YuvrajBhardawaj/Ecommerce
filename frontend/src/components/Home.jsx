@@ -8,7 +8,7 @@ function Home() {
     useEffect(() => {
     axios.get('https://ecommerce-backend-sodu.onrender.com/api/products')
         .then(res => {
-            console.log(res.data);  // Log the correct response data
+            //console.log(res.data);  
             setItems(res.data.data); // Assuming your API response has a `data` property that holds the products
         })
         .catch(error => console.error('Error fetching data:', error));
