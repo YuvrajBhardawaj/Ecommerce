@@ -12,7 +12,7 @@ function SignUp() {
     function signUp(e) {
         e.preventDefault();
         if (name.length > 0 && email.length > 0 && phone.length > 0 && address.length > 0 && password.length > 0 && gender.length > 0) {
-            axios.post('/api/signup', { name, email, phone, address, password, gender })
+            axios.post('https://ecommerce-backend-sodu.onrender.com/api/signup', { name, email, phone, address, password, gender })
                 .then((res) => {
                     console.log(res.data);
                     if (res.data.success) {
