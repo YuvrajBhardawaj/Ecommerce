@@ -4,7 +4,7 @@ import Home from './components/Home';
 import ProductDetails from './components/ProductDetails';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import Nav from './components/Nav';
+// import Nav from './components/Nav';
 import Category from './components/Category';
 import SignIn from './components/SignIn'
 import SignUp from './components/SignUp';
