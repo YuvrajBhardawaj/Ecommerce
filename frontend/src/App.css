@@ -1,4 +1,4 @@
-.cart-item-image {
+.cart-item-image, .wishlist-item-image{
     max-width: 100%;  /* Ensure the image doesn't overflow horizontally */
     max-height: 200px;  /* Set a maximum height to prevent overflow */
     object-fit: cover;  /* Make the image cover the space without distortion */
@@ -25,5 +25,12 @@
       max-width: 100%; /* Ensure image takes full width */
       max-height: 200px; /* Adjust image height for mobile */
     }
-  }
-  
+  } 
+
+.product-image {
+    max-width: 100%;  /* Ensure the image doesn't overflow horizontally */
+    max-height: 200px;  /* Set a maximum height for the image */
+    object-fit: contain;  /* Maintain aspect ratio and fit the image without cropping */
+    display: block;
+    margin: 0 auto;  /* Center the image horizontally */
+}

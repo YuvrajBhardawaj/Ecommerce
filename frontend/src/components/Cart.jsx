@@ -52,6 +52,7 @@ function Cart() {
                       <h5 className="card-title">{item.title}</h5>
                       <p className="card-text">Price: ${item.price}</p>
                       <p className="card-text">Quantity: {item.quantity}</p>
+                      <p>Total Cost : {item.price*item.quantity}</p>
                     </div>
                     <div className="d-flex justify-content-end">
                       <button

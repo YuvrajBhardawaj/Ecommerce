@@ -1,7 +1,7 @@
 import express from "express";
 import { verify } from "./auth.js"
 import cookieParser from "cookie-parser";
-import { getCategories, getProductById, getProducts, getCategoryByName, getReviews, loginUser, signUpUser, addCart, getCartItems, addToWishlist, removeFromWishlist, checkIfInWishlist, deleteCartItem, getWishlistItems } from "./database.js";
+import { getCategories, getProductById, getProducts, getCategoryByName, getReviews, loginUser, signUpUser, addCart, getCartItems, addToWishlist, removeFromWishlist, checkIfInWishlist, deleteCartItem, getWishlistItems, addReview, fetchUserDetails, addOrder } from "./database.js";
 
 const app=express()
 app.use(express.json())
@@ -112,7 +112,6 @@ app.delete('/api/signout', (req, res) => {
 app.post('/api/reviews',async(req,res)=>{
     const token=req.cookies.token
     const data=await verify(token)
-    console.log(data)
     if(data.success){
         const {item_id,review} = req.body
         const result = await addReview(data.id, item_id, review)
@@ -207,6 +206,63 @@ app.get('/api/wishlist', async (req, res) => {
     } catch (error) {
         console.error('Error fetching wishlist:', error);
         res.status(500).send({ success: false, message: 'Server error while fetching wishlist' });
+    }
+});
+app.get('/api/userDetails', async (req, res) => {
+    try {
+        const token = req.cookies.token;
+        if(!token)
+            return res.send({success:false, message:"Please login first"})
+        const check = await verify(token);
+
+        if (check.success) {
+            // Fetch user details from Firestore
+            const result = await fetchUserDetails(check.id);
+
+            // Check the result and send an appropriate response
+            if (result.success) {
+                res.status(200).send({
+                    success: true,
+                    user: {
+                        name: result.name,
+                        phone: result.phone,
+                        address: result.address
+                    }
+                });
+            } else 
+                res.status(404).send({success: false,message: result.message});
+
+        } else {
+            res.status(401).send({success: false,message: 'Unauthorized: Invalid token'});
+        }
+    } catch (error) {
+        console.error('Error handling /api/userDetails:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Internal Server Error'
+        });
+    }
+});
+app.post('/api/checkout', async (req, res) => {
+    try {
+        // Get the token from cookies
+        const token = req.cookies.token;
+        
+        // Verify the token
+        const check = await verify(token);
+
+        // Add order to Firestore using the verified user ID
+        const orderDetails = req.body;
+        const result = await addOrder(check.id, orderDetails);
+
+        if (result.success) {
+            return res.status(200).send({ success: true, message: 'Order placed successfully', orderId: result.orderId });
+        } else {
+            return res.status(500).send({ success: false, message: 'Failed to place the order' });
+        }
+    } catch (error) {
+        console.error('Error during checkout:', error);
+        return res.status(500).send({ success: false, message: 'Internal server error' });
     }
 });
 

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import heart from '../assets/heart_.png';
-
+import { useNavigate } from 'react-router-dom';
 function ProductDetails() {
     const { id } = useParams();
     const [product, setProduct] = useState(null);
@@ -12,12 +12,14 @@ function ProductDetails() {
     const [isInWishlist, setIsInWishlist] = useState(false);
     const [loading, setLoading] = useState(false); // Loading state for wishlist actions
     const [wishlistLoading, setWishlistLoading] = useState(true); // Loading state for wishlist check
+    const navigate = useNavigate();
 
     useEffect(() => {
         // Fetch product details, reviews, and wishlist status
         const fetchProductAndReviews = async () => {
             try {
                 const productResponse = await axios.get(`/api/product/${id}`);
+                // console.log(productResponse.data.data)
                 setProduct(productResponse.data.data);
 
                 const reviewsResponse = await axios.get(`/api/reviews/${id}`);
@@ -62,35 +64,33 @@ function ProductDetails() {
             });
     };
 
-    const handleBuyNow = () => {
-        axios.post('/api/product/BuyNow', { productId: id, quantity })
-            .then(response => {
-                console.log('Product bought:', response.data);
-            })
-            .catch(error => {
-                console.error('Error buying product:', error);
-            });
-    };
-
     const handleReviewChange = (event) => {
         setReviewText(event.target.value);
     };
 
-    const handleReviewSubmit = (event) => {
+    const handleReviewSubmit = async (event) => {
         event.preventDefault();
-        axios.post('/api/reviews', { item_id: id, review: reviewText })
-            .then(response => {
-                if (response.data.success) {
-                    alert('Review submitted successfully');
-                    setReviewText(""); // Clear the review input field
-                    setReviews(prevReviews => [...prevReviews, { review: reviewText }]); // Update reviews state
-                } else {
-                    alert(response.data.message);
+        
+        try {
+            const response = await axios.post('/api/reviews', { item_id: id, review: reviewText });
+            
+            if (response.data.success) {
+                //alert('Review submitted successfully');
+                
+                // Clear the review input field
+                setReviewText("");
+                
+                // Fetch latest product and reviews data after submitting the review
+                const reviewsResponse = await axios.get(`/api/reviews/${id}`);
+                if (reviewsResponse.data.success) {
+                    setReviews(reviewsResponse.data.reviews); // Manually update the reviews state
                 }
-            })
-            .catch(error => {
-                console.error('Error submitting review:', error);
-            });
+            }
+            else
+                alert(response.data.message)
+        } catch (error) {
+            console.error('Error submitting review:', error);
+        }
     };
 
     const handleAddToWishlist = () => {
@@ -113,11 +113,38 @@ function ProductDetails() {
             });
     };
 
+    const formatDate = (timestamp) => {
+        if (timestamp && timestamp.seconds) {
+            // Convert Firestore timestamp (seconds + nanoseconds) to JavaScript Date
+            const date = new Date(timestamp.seconds * 1000); // Firestore timestamp is in seconds, JavaScript Date expects milliseconds
+            return date.toLocaleString(); // Format the date and time for better readability
+        }
+        return "Invalid date";
+    };
+    const handleBuyNow = async () => {
+        try {
+            const response = await axios.get('/api/userDetails');
+            if (response.data.success) {
+                const fetchedUser = response.data.user;
+                navigate('/checkout', {
+                    state: {
+                        user: fetchedUser,  
+                        product: product,    
+                        quantity: quantity
+                    }
+                });
+            } else {
+                alert("Sign in First");
+            }
+        } catch (error) {
+            console.error('Error fetching user data:', error);
+        }
+    };
     return (
         <div className="container">
             <div className="row">
                 <div className="col-md-6">
-                    <img src={product.image} alt={product.title} className="img-fluid product-image" />
+                    <img src={product.image} alt={product.title} className="img-fluid" />
                 </div>
                 <div className="col-md-6">
                     <h2>{product.title}</h2>
@@ -165,9 +192,10 @@ function ProductDetails() {
                     <div className="previous-reviews mt-4">
                         <h4>Previous Reviews</h4>
                         {reviews.length > 0 ? (
-                            reviews.map((review, index) => (
-                                <div key={index} className="review">
-                                    <p>{index + 1}. {review.review}</p>
+                            reviews.map((data, index) => (
+                                <div key={index} className="review border border-secondary p-2 mb-3">
+                                    <p>{index + 1}. {data.comment.review}</p>
+                                    <p><small>Submitted on: {formatDate(data.comment.createdAt)}</small></p>
                                 </div>
                             ))
                         ) : (

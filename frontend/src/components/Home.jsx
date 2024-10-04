@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-
+import '../App.css'; // Ensure this includes the same styles used in Cart and Wishlist
 
 function Home() {
     const [items, setItems] = useState([]);
@@ -20,7 +20,9 @@ function Home() {
                 {items.map(item => (
                     <div key={item.id} className="col mb-4">
                         <div className="card h-100">
-                            <img src={item.image} className="card-img-top img-fluid" alt={item.title} />
+                            <div className="d-flex justify-content-center align-items-center" style={{ height: '250px' }}>
+                                <img src={item.image} className="product-image card-img-top" alt={item.title} />
+                            </div>
                             <div className="card-body">
                                 <h5 className="card-title">{item.title}</h5>
                             </div>

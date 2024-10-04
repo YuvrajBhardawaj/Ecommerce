@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getFirestore, collection, getDocs, doc, getDoc, setDoc, query, where, deleteDoc, updateDoc } from "firebase/firestore";
+import { getFirestore, collection, getDocs, doc, getDoc, setDoc, query, where, deleteDoc, updateDoc, addDoc } from "firebase/firestore";
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth";
 import jwt from "jsonwebtoken";
 const JWT_SECRET = "MyKey";
@@ -100,7 +100,7 @@ export async function getReviews(productId) {
             id: doc.id,
             ...doc.data()
         }));
-
+        // console.log(reviews)
         if (reviews.length === 0) {
             return { success: true, message: 'No reviews found for this product', reviews: [] };
         }
@@ -149,6 +149,9 @@ export async function signUpUser(email, password, name, phone, address, gender) 
         console.log("User signed up and additional details stored successfully");
         return { success: true, message: "User signed up and details stored successfully" };
     } catch (error) {
+        if (error.code === 'auth/email-already-in-use') {
+            return { success: false, message: "auth/email-already-in-use" };
+        }
         console.error("Error during sign up:", error.message);
         return { success: false, message: error.message };
     }
@@ -270,5 +273,53 @@ export async function getWishlistItems(userId) {
     } catch (error) {
         console.error('Error fetching wishlist items:', error);
         return { success: false, message: 'Failed to fetch wishlist items' };
+    }
+}
+export async function addReview(userId, productId, reviewText) {
+    try {
+        const reviewData = {
+            review: reviewText,
+            createdAt: new Date()
+        };
+
+        // Add a new review under the `reviews` sub-collection of a product
+        const reviewsCollectionRef = doc(db,`products/${productId}/review`,userId);
+        await setDoc(reviewsCollectionRef, {comment : reviewData});
+
+        return { success: true, message: 'Review added successfully' };
+    } catch (error) {
+        console.error('Error adding review:', error);
+        return { success: false, message: 'Failed to add review' };
+    }
+}
+export async function fetchUserDetails(userId) {
+    try {
+        const userRef = doc(db, 'users', userId);
+        const userDoc = await getDoc(userRef);
+
+        if (userDoc.exists()) {
+            const userData = userDoc.data();
+            const { name, phone, address } = userData;
+            return { success: true, name, phone, address };
+        } else {
+            return { success: false, message: 'User not found' };
+        }
+    } catch (error) {
+        console.error('Error fetching user details:', error);
+        return { success: false, message: 'Failed to fetch user details' };
+    }
+}
+export async function addOrder(userId, orderDetails) {
+    try {
+        // Reference to the user's orders collection
+        if(!userId)
+            return {success:false, message: "Kindly sign in to place order"}
+        const ordersRef = collection(db, `users/${userId}/orders`);
+        // Add a new document to the orders collection
+        const docRef = await addDoc(ordersRef, orderDetails);
+        return { success: true, message: 'Order Placed Successfully', orderId: docRef.id };
+    } catch (error) {
+        console.error('Error adding order:', error);
+        return { success: false, message: 'Failed to add order' };
     }
 }

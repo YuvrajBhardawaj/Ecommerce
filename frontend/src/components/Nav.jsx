@@ -30,15 +30,15 @@ function Nav() {
 
     const signOut = () => {
         axios.delete('/api/signout')
-            .then((res) => setIsLoggedIn(false))
+            .then(() => setIsLoggedIn(false))
             .catch(err => console.log(err));
     };
 
     return (
-        <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
+        <nav className="navbar navbar-expand-lg navbar-dark bg-dark mb-2">
             <div className="container">
                 <Link className="navbar-brand" to="/">MyStore</Link>
-                <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                     <span className="navbar-toggler-icon"></span>
                 </button>
                 <div className="collapse navbar-collapse justify-content-between" id="navbarNav">
@@ -52,17 +52,16 @@ function Nav() {
                     <ul className="navbar-nav">
                         {isLoggedIn ? (
                             <>
-                                <li>
+                                <li className="nav-item">
                                     <Link className="nav-link" to="/cart">Cart</Link>
                                 </li>
-                                <li>
-                                    <Link className="nav-link" to="/wishlist">WishList</Link>
+                                <li className="nav-item">
+                                    <Link className="nav-link" to="/wishlist">Wishlist</Link>
                                 </li>
                                 <li className="nav-item">
-                                    <button className="nav-link" onClick={signOut}>Sign Out</button>
+                                    <button className="nav-link btn btn-link text-decoration-none" onClick={signOut}>Sign Out</button>
                                 </li>
                             </>
-                            
                         ) : (
                             <>
                                 <li className="nav-item">

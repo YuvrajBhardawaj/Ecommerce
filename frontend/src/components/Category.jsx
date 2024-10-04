@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import axios from 'axios';
-
+import '../App.css';
 function Category() {
     const [items, setItems] = useState([]);
     const { id } = useParams();
@@ -20,7 +20,9 @@ function Category() {
                 {items.map(item => (
                     <div key={item.id} className="col mb-4">
                         <div className="card h-100">
-                            <img src={item.image} className="card-img-top img-fluid" alt={item.title} />
+                            <div className="d-flex justify-content-center align-items-center" style={{ height: '250px' }}>
+                                <img src={item.image} className="product-image card-img-top" alt={item.title} />
+                            </div>
                             <div className="card-body">
                                 <h5 className="card-title">{item.title}</h5>
                             </div>
