@@ -8,7 +8,7 @@ app.use(express.json())
 app.use(cookieParser());
 //app.use(express.urlencoded({extended:true}))
 app.use(cors({
-  origin: 'https://ecommerce-beryl-theta.vercel.app',  // Allow requests from your frontend domain
+  origin: 'https://ecommerce-z1wl.onrender.com',  // Allow requests from your frontend domain
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   credentials: true, // if you need to handle cookies
 }));
