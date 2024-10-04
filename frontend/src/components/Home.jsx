@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import '../App.css'; // Ensure this includes the same styles used in Cart and Wishlist
-
+import axios from 'axios';
 function Home() {
     const [items, setItems] = useState([]);
 
     useEffect(() => {
-        fetch('/api/products')
+        axios.get('https://ecommerce-backend-sodu.onrender.com/api/products')
             .then(res => res.json())
             .then(data => {
                 setItems(data.data);
