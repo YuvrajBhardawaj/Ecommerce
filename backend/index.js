@@ -100,7 +100,7 @@ app.post('/api/login', async (req, res) => {
     // Send response back to the client
     if (data.success) {
         // Optional: Set cookie or send token
-        res.cookie('token', data.token, { httpOnly: true, maxAge: 3600000, sameSite: 'None'});
+        res.cookie('token', data.token, { httpOnly: true, maxAge: 3600000, sameSite: 'None', secure: true });
         res.status(200).send({ success: true, message: 'Login successful'});
     } else {
         res.status(400).send({ success: false, message: data.message });
