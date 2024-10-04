@@ -6,7 +6,7 @@ function Home() {
     const [items, setItems] = useState([]);
 
     useEffect(() => {
-        fetch('/api/products')
+        fetch('https://to-do-list-backend-mojb.onrender.com/api/products')
             .then(res => res.json())
             .then(data => {
                 setItems(data.data);
