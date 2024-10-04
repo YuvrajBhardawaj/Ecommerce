@@ -8,7 +8,7 @@ app.use(express.json())
 app.use(cookieParser());
 //app.use(express.urlencoded({extended:true}))
 app.use(cors({
-  origin: 'ecommerce-1ajgxv8nt-yuvraj-bhardawajs-projects.vercel.app',  // Allow requests from your frontend domain
+  origin: 'https://vercel.com/yuvraj-bhardawajs-projects/ecommerce',  // Allow requests from your frontend domain
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   credentials: true, // if you need to handle cookies
 }));
