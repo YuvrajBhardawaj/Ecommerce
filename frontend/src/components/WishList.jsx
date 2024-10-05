@@ -29,7 +29,7 @@ function Wishlist() {
 
     const handleRemoveFromWishlist = (itemId) => {
         // Remove item from wishlist
-        axios.post('https://ecommerce-backend-sodu.onrender.com/api/product/removeWishlist', { item_id: itemId })
+        axios.post('https://ecommerce-backend-sodu.onrender.com/api/product/removeWishlist', { item_id: itemId }, { withCredentials: true })
             .then(res => {
                 if (res.data.success) {
                     setWishlistItems(prevItems => prevItems.filter(item => item.id !== itemId)); // Update state after removal
