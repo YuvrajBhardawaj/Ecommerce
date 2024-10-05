@@ -27,7 +27,7 @@ function Checkout() {
             totalPrice,
         };
         try {
-            const response = await axios.post('https://ecommerce-backend-sodu.onrender.com/api/checkout', orderDetails);
+            const response = await axios.post('https://ecommerce-backend-sodu.onrender.com/api/checkout', orderDetails, { withCredentials: true });
             if (response.data.success) {
                 alert("Order Placed")
                 navigate('/')
