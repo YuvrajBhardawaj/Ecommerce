@@ -9,14 +9,14 @@ function Cart() {
 
   useEffect(() => {
     // Fetch cart items on component load
-    axios.get('https://ecommerce-backend-sodu.onrender.com/api/cart')
+    axios.get('https://ecommerce-backend-sodu.onrender.com/api/cart', { withCredentials: true })
       .then(res => setItems(res.data.cartItems))
       .catch(err => console.log(err));
   }, []);
 
   // Handle removing an item from the cart
   const handleRemoveItem = (itemId) => {
-    axios.delete(`https://ecommerce-backend-sodu.onrender.com/api/cart/${itemId}`)
+    axios.delete(`https://ecommerce-backend-sodu.onrender.com/api/cart/${itemId}`, { withCredentials: true })
       .then(res => {
         if (res.data.success) {
           // Remove the item from the items state
