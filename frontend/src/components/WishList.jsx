@@ -12,7 +12,7 @@ function Wishlist() {
         // Fetch all wishlist items
         const fetchWishlistItems = async () => {
             try {
-                const response = await axios.get('https://ecommerce-backend-sodu.onrender.com/api/wishlist');
+                const response = await axios.get('https://ecommerce-backend-sodu.onrender.com/api/wishlist', { withCredentials: true });
                 if (response.data.success) {
                     setWishlistItems(response.data.wishlist); // Update state with fetched wishlist items
                 } else {
