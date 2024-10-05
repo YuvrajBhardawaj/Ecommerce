@@ -81,7 +81,7 @@ function ProductDetails() {
                 setReviewText("");
                 
                 // Fetch latest product and reviews data after submitting the review
-                const reviewsResponse = await axios.get(`https://ecommerce-backend-sodu.onrender.com{ withCredentials: true }/api/reviews/${id}`);
+                const reviewsResponse = await axios.get(`https://ecommerce-backend-sodu.onrender.com/api/reviews/${id}`);
                 if (reviewsResponse.data.success) {
                     setReviews(reviewsResponse.data.reviews); // Manually update the reviews state
                 }
@@ -123,7 +123,7 @@ function ProductDetails() {
     };
     const handleBuyNow = async () => {
         try {
-            const response = await axios.get('https://ecommerce-backend-sodu.onrender.com/api/userDetails');
+            const response = await axios.get('https://ecommerce-backend-sodu.onrender.com/api/userDetails', { withCredentials: true });
             if (response.data.success) {
                 const fetchedUser = response.data.user;
                 navigate('/checkout', {
