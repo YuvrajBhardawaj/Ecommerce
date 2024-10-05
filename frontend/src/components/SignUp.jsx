@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from "axios";
+import { useNavigate } from 'react-router-dom';
 
 function SignUp() {
     const [name, setName] = useState("");
@@ -8,7 +9,8 @@ function SignUp() {
     const [address, setAddress] = useState("");
     const [password, setPassword] = useState("");
     const [gender, setGender] = useState("");
-
+    const navigate = useNavigate();
+    
     function signUp(e) {
         e.preventDefault();
         if (name.length > 0 && email.length > 0 && phone.length > 0 && address.length > 0 && password.length > 0 && gender.length > 0) {
@@ -17,7 +19,7 @@ function SignUp() {
                     console.log(res.data);
                     if (res.data.success) {
                         console.log(res.data.message);
-                        window.location.href = '/signin';
+                        navigate('/signin')
                     }
                 })
                 .catch((err) =>{
