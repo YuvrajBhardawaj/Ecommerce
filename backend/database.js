@@ -1,8 +1,10 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore, collection, getDocs, doc, getDoc, setDoc, query, where, deleteDoc, updateDoc, addDoc } from "firebase/firestore";
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth";
+import Sentiment from 'sentiment'
 import jwt from "jsonwebtoken";
 const JWT_SECRET = "MyKey";
+const sentiment = new Sentiment();
 const firebaseConfig = {
     apiKey: "AIzaSyDQxVHMyU_3oqxO85rKNmUnD1I8KUbcz2g",
     authDomain: "e-commerce-1b583.firebaseapp.com",
@@ -95,17 +97,38 @@ export async function getReviews(productId) {
         const reviewsCollectionRef = collection(db, `products/${productId}/review`);
         const reviewsQuery = query(reviewsCollectionRef);
         const querySnapshot = await getDocs(reviewsQuery);
-
         const reviews = querySnapshot.docs.map(doc => ({
             id: doc.id,
             ...doc.data()
         }));
         // console.log(reviews)
         if (reviews.length === 0) {
-            return { success: true, message: 'No reviews found for this product', reviews: [] };
+            return { success: true, message: 'No reviews found for this product', reviews: [],sentiments:{positive:0,negative:0,neutral:0} };
         }
+        // Fetch the reviews from the sub-collection
+        //console.log(reviews);
 
-        return { success: true, reviews: reviews };
+        // Process reviews
+        const allReviews = [];
+        reviews.forEach((e) => {
+            allReviews.push(e.comment.review);
+        });
+        //console.log(allReviews);
+        let positiveCount = 0, negativeCount = 0, neutralCount = 0;
+
+        reviews.forEach(e => {
+            const result = sentiment.analyze(e.comment.review);
+            if (result.score > 0) positiveCount++;
+            else if (result.score < 0) negativeCount++;
+            else neutralCount++;
+        });
+
+        const totalComments = allReviews.length;
+
+        console.log(`Positive Comments: ${(positiveCount / totalComments) * 100}%`);
+        console.log(`Negative Comments: ${(negativeCount / totalComments) * 100}%`);
+        console.log(`Neutral Comments: ${(neutralCount / totalComments) * 100}%`);
+        return { success: true, reviews: reviews, sentiments:{positive:(positiveCount / totalComments) * 100,negative:(negativeCount / totalComments) * 100,neutral:(neutralCount / totalComments) * 100} };
     } catch (error) {
         console.error('Error fetching reviews:', error);
         return { success: false, message: 'Failed to fetch reviews' };
