@@ -89,7 +89,7 @@ function ProductDetails() {
     };
 
     const handleAddToCart = () => {
-        axios.post('https://ecommerce-backend-sodu.onrender.com/api/product/addCart', { item_id: id, title: product.title, quantity, price: product.price, image: product.image })
+        axios.post('https://ecommerce-backend-sodu.onrender.com/api/product/addCart', { item_id: id, title: product.title, quantity, price: product.price, image: product.image },{ withCredentials: true })
             .then(res => {
                 if (res.data.success) {
                     alert('Product added to cart');
@@ -110,7 +110,7 @@ function ProductDetails() {
         event.preventDefault();
         
         try {
-            const response = await axios.post('https://ecommerce-backend-sodu.onrender.com/api/reviews', { item_id: id, review: reviewText });
+            const response = await axios.post('https://ecommerce-backend-sodu.onrender.com/api/reviews', { item_id: id, review: reviewText },{ withCredentials: true });
             
             if (response.data.success) {
                 //alert('Review submitted successfully');
@@ -137,7 +137,7 @@ function ProductDetails() {
 
         const apiEndpoint = isInWishlist ? 'https://ecommerce-backend-sodu.onrender.com/api/product/removeWishlist' : 'https://ecommerce-backend-sodu.onrender.com/api/product/addWishlist';
         
-        axios.post(apiEndpoint, { item_id: id, title: product.title, price: product.price, image: product.image })
+        axios.post(apiEndpoint, { item_id: id, title: product.title, price: product.price, image: product.image }, { withCredentials: true })
             .then(res => {
                 setLoading(false); // Stop loading after the wishlist action completes
                 if (res.data.success) {
@@ -162,7 +162,7 @@ function ProductDetails() {
     };
     const handleBuyNow = async () => {
         try {
-            const response = await axios.get('https://ecommerce-backend-sodu.onrender.com/api/userDetails');
+            const response = await axios.get('https://ecommerce-backend-sodu.onrender.com/api/userDetails', { withCredentials: true });
             if (response.data.success) {
                 const fetchedUser = response.data.user;
                 navigate('/checkout', {
