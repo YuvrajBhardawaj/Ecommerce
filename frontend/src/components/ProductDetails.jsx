@@ -3,6 +3,17 @@ import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import heart from '../assets/heart_.png';
 import { useNavigate } from 'react-router-dom';
+import { Chart as ChartJS, ArcElement, Tooltip, Legend, Title, CategoryScale, LinearScale } from 'chart.js';
+import { Doughnut } from 'react-chartjs-2';
+// Register chart elements
+ChartJS.register(
+  ArcElement,
+  Tooltip,
+  Legend,
+  Title,
+  CategoryScale,
+  LinearScale
+);
 function ProductDetails() {
     const { id } = useParams();
     const [product, setProduct] = useState(null);
@@ -12,6 +23,7 @@ function ProductDetails() {
     const [isInWishlist, setIsInWishlist] = useState(false);
     const [loading, setLoading] = useState(false); // Loading state for wishlist actions
     const [wishlistLoading, setWishlistLoading] = useState(true); // Loading state for wishlist check
+    const [sentiments,setSentiments] = useState({});
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -21,10 +33,12 @@ function ProductDetails() {
                 const productResponse = await axios.get(`/api/product/${id}`);
                 // console.log(productResponse.data.data)
                 setProduct(productResponse.data.data);
-
+                
                 const reviewsResponse = await axios.get(`/api/reviews/${id}`);
                 if (reviewsResponse.data.success) {
                     setReviews(reviewsResponse.data.reviews);
+                    setSentiments(reviewsResponse.data.sentiments);
+                    console.log(reviewsResponse.data);
                 }
 
                 const wishlistResponse = await axios.get(`/api/wishlist/check/${id}`);
@@ -45,6 +59,30 @@ function ProductDetails() {
         return <div>Loading...</div>;
     }
 
+    const data = {
+        labels: ['Positive(%)', 'Negative(%)', 'Neutral(%)'],
+        datasets: [{
+            data: [
+                sentiments?.positive || 0,  // Use a default value of 0 if sentiments.positive is undefined
+                sentiments?.negative || 0,  // Same for negative and neutral
+                sentiments?.neutral || 0,
+            ],
+            backgroundColor: ['#4caf50', '#f44336', '#ffc107'],
+            hoverOffset: 4,
+        }]
+    };
+
+    const options = {
+        cutout: '80%', // Inner radius
+        plugins: {
+            legend: { display: false },
+            title: {
+                display: true,
+                text: 'A.I Preview Of Product',
+                font: { size: 16 }
+            }
+        }
+    };
     const handleChangeQuantity = (event) => {
         const newQuantity = parseInt(event.target.value);
         setQuantity(newQuantity);
@@ -84,6 +122,7 @@ function ProductDetails() {
                 const reviewsResponse = await axios.get(`/api/reviews/${id}`);
                 if (reviewsResponse.data.success) {
                     setReviews(reviewsResponse.data.reviews); // Manually update the reviews state
+                    setSentiments(reviewsResponse.data.sentiments)
                 }
             }
             else
@@ -191,13 +230,16 @@ function ProductDetails() {
                     </div>
                     <div className="previous-reviews mt-4">
                         <h4>Previous Reviews</h4>
-                        {reviews.length > 0 ? (
-                            reviews.map((data, index) => (
+                        {reviews.length > 0 ? (<>
+                        
+                            {reviews.map((data, index) => (
                                 <div key={index} className="review border border-secondary p-2 mb-3">
                                     <p>{index + 1}. {data.comment.review}</p>
                                     <p><small>Submitted on: {formatDate(data.comment.createdAt)}</small></p>
                                 </div>
-                            ))
+                            ))}
+                            <Doughnut data={data} options={options} />
+                            </>
                         ) : (
                             <p>No reviews yet.</p>
                         )}
