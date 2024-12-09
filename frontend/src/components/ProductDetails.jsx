@@ -3,6 +3,17 @@ import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import heart from '../assets/heart_.png';
 import { useNavigate } from 'react-router-dom';
+import { Chart as ChartJS, ArcElement, Tooltip, Legend, Title, CategoryScale, LinearScale } from 'chart.js';
+import { Doughnut } from 'react-chartjs-2';
+// Register chart elements
+ChartJS.register(
+  ArcElement,
+  Tooltip,
+  Legend,
+  Title,
+  CategoryScale,
+  LinearScale
+);
 function ProductDetails() {
     const { id } = useParams();
     const [product, setProduct] = useState(null);
@@ -12,22 +23,25 @@ function ProductDetails() {
     const [isInWishlist, setIsInWishlist] = useState(false);
     const [loading, setLoading] = useState(false); // Loading state for wishlist actions
     const [wishlistLoading, setWishlistLoading] = useState(true); // Loading state for wishlist check
+    const [sentiments,setSentiments] = useState({});
     const navigate = useNavigate();
 
     useEffect(() => {
         // Fetch product details, reviews, and wishlist status
         const fetchProductAndReviews = async () => {
             try {
-                const productResponse = await axios.get(`https://ecommerce-backend-sodu.onrender.com/api/product/${id}`);
+                const productResponse = await axios.get(`/api/product/${id}`);
                 // console.log(productResponse.data.data)
                 setProduct(productResponse.data.data);
-
-                const reviewsResponse = await axios.get(`https://ecommerce-backend-sodu.onrender.com/api/reviews/${id}`);
+                
+                const reviewsResponse = await axios.get(`/api/reviews/${id}`);
                 if (reviewsResponse.data.success) {
                     setReviews(reviewsResponse.data.reviews);
+                    setSentiments(reviewsResponse.data.sentiments);
+                    console.log(reviewsResponse.data);
                 }
 
-                const wishlistResponse = await axios.get(`https://ecommerce-backend-sodu.onrender.com/api/wishlist/check/${id}`, { withCredentials: true });
+                const wishlistResponse = await axios.get(`/api/wishlist/check/${id}`);
                 if (wishlistResponse.data.success) {
                     setIsInWishlist(wishlistResponse.data.isInWishlist);
                 }
@@ -45,13 +59,37 @@ function ProductDetails() {
         return <div>Loading...</div>;
     }
 
+    const data = {
+        labels: ['Positive(%)', 'Negative(%)', 'Neutral(%)'],
+        datasets: [{
+            data: [
+                sentiments?.positive || 0,  // Use a default value of 0 if sentiments.positive is undefined
+                sentiments?.negative || 0,  // Same for negative and neutral
+                sentiments?.neutral || 0,
+            ],
+            backgroundColor: ['#4caf50', '#f44336', '#ffc107'],
+            hoverOffset: 4,
+        }]
+    };
+
+    const options = {
+        cutout: '80%', // Inner radius
+        plugins: {
+            legend: { display: false },
+            title: {
+                display: true,
+                text: 'A.I Preview Of Product',
+                font: { size: 16 }
+            }
+        }
+    };
     const handleChangeQuantity = (event) => {
         const newQuantity = parseInt(event.target.value);
         setQuantity(newQuantity);
     };
 
     const handleAddToCart = () => {
-        axios.post('https://ecommerce-backend-sodu.onrender.com/api/product/addCart', { item_id: id, title: product.title, quantity, price: product.price, image: product.image }, { withCredentials: true })
+        axios.post('/api/product/addCart', { item_id: id, title: product.title, quantity, price: product.price, image: product.image })
             .then(res => {
                 if (res.data.success) {
                     alert('Product added to cart');
@@ -72,7 +110,7 @@ function ProductDetails() {
         event.preventDefault();
         
         try {
-            const response = await axios.post('https://ecommerce-backend-sodu.onrender.com/api/reviews', { item_id: id, review: reviewText }, { withCredentials: true });
+            const response = await axios.post('/api/reviews', { item_id: id, review: reviewText });
             
             if (response.data.success) {
                 //alert('Review submitted successfully');
@@ -81,9 +119,10 @@ function ProductDetails() {
                 setReviewText("");
                 
                 // Fetch latest product and reviews data after submitting the review
-                const reviewsResponse = await axios.get(`https://ecommerce-backend-sodu.onrender.com/api/reviews/${id}`);
+                const reviewsResponse = await axios.get(`/api/reviews/${id}`);
                 if (reviewsResponse.data.success) {
                     setReviews(reviewsResponse.data.reviews); // Manually update the reviews state
+                    setSentiments(reviewsResponse.data.sentiments)
                 }
             }
             else
@@ -96,9 +135,9 @@ function ProductDetails() {
     const handleAddToWishlist = () => {
         setLoading(true); // Start loading during the wishlist action
 
-        const apiEndpoint = isInWishlist ? 'https://ecommerce-backend-sodu.onrender.com/api/product/removeWishlist' : 'https://ecommerce-backend-sodu.onrender.com/api/product/addWishlist';
+        const apiEndpoint = isInWishlist ? '/api/product/removeWishlist' : '/api/product/addWishlist';
         
-        axios.post(apiEndpoint, { item_id: id, title: product.title, price: product.price, image: product.image }, { withCredentials: true })
+        axios.post(apiEndpoint, { item_id: id, title: product.title, price: product.price, image: product.image })
             .then(res => {
                 setLoading(false); // Stop loading after the wishlist action completes
                 if (res.data.success) {
@@ -123,7 +162,7 @@ function ProductDetails() {
     };
     const handleBuyNow = async () => {
         try {
-            const response = await axios.get('https://ecommerce-backend-sodu.onrender.com/api/userDetails', { withCredentials: true });
+            const response = await axios.get('/api/userDetails');
             if (response.data.success) {
                 const fetchedUser = response.data.user;
                 navigate('/checkout', {
@@ -191,13 +230,16 @@ function ProductDetails() {
                     </div>
                     <div className="previous-reviews mt-4">
                         <h4>Previous Reviews</h4>
-                        {reviews.length > 0 ? (
-                            reviews.map((data, index) => (
+                        {reviews.length > 0 ? (<>
+                        
+                            {reviews.map((data, index) => (
                                 <div key={index} className="review border border-secondary p-2 mb-3">
                                     <p>{index + 1}. {data.comment.review}</p>
                                     <p><small>Submitted on: {formatDate(data.comment.createdAt)}</small></p>
                                 </div>
-                            ))
+                            ))}
+                            <Doughnut data={data} options={options} />
+                            </>
                         ) : (
                             <p>No reviews yet.</p>
                         )}
